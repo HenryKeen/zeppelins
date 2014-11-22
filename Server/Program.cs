@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
@@ -29,7 +30,7 @@ namespace Server
                 using (DealerSocket server = ctx.CreateDealerSocket())
                 {
                     const int port = 5556;
-                    server.Bind(string.Format("tcp://192.168.43.121:{0}", port));
+                    server.Bind(string.Format("tcp://{0}:{1}", ip, port));
 
                     while (true)
                     {
@@ -54,16 +55,8 @@ namespace Server
 
         static IPAddress GetIpAddress()
         {
-            return NetworkInterface.GetAllNetworkInterfaces().First(x => x.Name.ToLower() == "wi-fi").GetIPProperties().UnicastAddresses.First().Address;
-
-            foreach (NetworkInterface netif in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                Console.WriteLine("Network Interface: {0}", netif.Name);
-                IPInterfaceProperties properties = netif.GetIPProperties();
-
-                foreach (IPAddressInformation unicast in properties.UnicastAddresses)
-                    Console.WriteLine("\tUniCast: {0}", unicast.Address);
-            }
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
         }
     }
 }
