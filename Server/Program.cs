@@ -18,19 +18,29 @@ namespace Server
 
         static void RunServer()
         {
+            bool isDead = false;
 
             using (NetMQContext ctx = NetMQContext.Create())
             {
                 using (DealerSocket server = ctx.CreateDealerSocket())
                 {
-                    int port = new Random().Next(3000, 7000);
-                    server.Bind(string.Format("tcp://127.0.0.1:{0}", port));
+                    const int port = 5556;
+                    server.Bind(string.Format("tcp://192.168.43.121:{0}", port));
 
-                    string receivedMessage = server.ReceiveString();
-                    string endpoint = server.Options.GetLastEndpoint;
-                    Console.WriteLine("Server received message '{0}' from '{1}'", receivedMessage, endpoint);
-
-                    server.Send(string.Format("Zepplins-{0} {1}", Guid.NewGuid(), endpoint));
+                    while (true)
+                    {
+                        if (isDead)
+                        {
+                            server.Send(string.Format("I'm dead, stop poking me"));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Trying to send the secret");
+                            server.Send(string.Format("Zepplins-{0}", Guid.NewGuid()));
+                            Console.WriteLine("Sent the secret");
+                            isDead = true;
+                        }
+                    }
                 }
             }
         }
