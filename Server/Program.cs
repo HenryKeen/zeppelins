@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
@@ -19,6 +21,8 @@ namespace Server
         static void RunServer()
         {
             bool isDead = false;
+
+            IPAddress ip = GetIpAddress();
 
             using (NetMQContext ctx = NetMQContext.Create())
             {
@@ -45,6 +49,20 @@ namespace Server
                         }
                     }
                 }
+            }
+        }
+
+        static IPAddress GetIpAddress()
+        {
+            return NetworkInterface.GetAllNetworkInterfaces().First(x => x.Name.ToLower() == "wi-fi").GetIPProperties().UnicastAddresses.First().Address;
+
+            foreach (NetworkInterface netif in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                Console.WriteLine("Network Interface: {0}", netif.Name);
+                IPInterfaceProperties properties = netif.GetIPProperties();
+
+                foreach (IPAddressInformation unicast in properties.UnicastAddresses)
+                    Console.WriteLine("\tUniCast: {0}", unicast.Address);
             }
         }
     }
