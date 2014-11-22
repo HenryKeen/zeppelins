@@ -35,9 +35,12 @@ namespace Server
                         }
                         else
                         {
-                            Console.WriteLine("Trying to send the secret");
-                            server.Send(string.Format("Zepplins-{0}", Guid.NewGuid()));
-                            Console.WriteLine("Sent the secret");
+                            var secret = string.Format("Zepplins-{0}", Guid.NewGuid());
+
+                            Console.WriteLine("Trying to send the secret...");
+                            server.Send(secret);
+                            Console.WriteLine("...sent secret '{0}'", secret);
+                            
                             isDead = true;
                         }
                     }
